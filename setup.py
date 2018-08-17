@@ -8,6 +8,8 @@ with open("README.rst", "r") as fh:
 setup(
     name='almanak',
     version='0.0.2',
+    author='Claus Juhl Knudsen',
+    author_email='clausjuhl@yahoo.com',
     packages=find_packages(),
     description='Module and CLI for almanak.',
     long_description=long_description,
@@ -19,7 +21,7 @@ setup(
     ],
     entry_points="""
         [console_scripts]
-        almanak=almanak.scripts.cli:cli
+        almanak = almanak.scripts.cli:hello
     """,
     classifiers=[
         "Programming Language :: Python :: 3",

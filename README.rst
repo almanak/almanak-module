@@ -1,2 +1,2 @@
-# almanak-cli
-Command line interface for almanak.
+# almanak
+Module and command line interface for almanak.
