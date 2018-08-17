@@ -9,6 +9,11 @@ def hello(count, name):
     for x in range(count):
         click.echo('Hello %s!' % name)
 
+@click.command()
+def clear():
+    """Clears the visible screen in a platform-agnostic way"""
+    click.clear()
+
 
 if __name__ == '__main__':
     hello()
