@@ -1,0 +1,52 @@
+almanak filestore
+
+# generate_zips
+# checksum
+
+
+# update_filelist
+
+params:
+folder, default M:/Borgerservice...ark_master_store
+distribute_additions, default False
+distribute_deletions, default False
+destribute_modifications, default False
+media, default 'local server'
+recursive, default False
+
+
+table (and csv-file)
+filename
+containername
+modified_at
+created_at
+path (without drive-letters)
+medialabel (Archive VII, Digital archive...)
+bytesize
+filehash
+containerhash
+hash_algoritm
+hashtest_at
+
+COMMAND: almanak filestore update --media 'local server' --distribute True
+
+READ current filelist from filelist-folder (contains a filelist for each media)
+FOR file in folder:
+    IF not in filelist:
+        generate checksum
+        save as new entry in changes-file
+    ELIF modified != modified:
+        save as updated entry in changes-file
+    ELSE:
+        filelist.remove(file)
+        continue
+
+If filelist:
+    FOR file in filelist:
+        save as deleted file in changes-file
+
+IF changes-file:
+    filstore_logger.info('new files found during update-command')
+    FOR file in changes:
+
+save/upload logfile
