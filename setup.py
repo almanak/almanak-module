@@ -16,9 +16,8 @@ setup(
     install_requires=[
         'click',
     ],
-    entry_points={
-        'console_scripts': [
-            'almanak.scripts.cli:cli',
-        ],
-    }
+    entry_points="""
+        [console_scripts]
+        almanak=almanak.scripts.cli:cli
+    """
 )
