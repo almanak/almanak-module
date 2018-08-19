@@ -16,12 +16,13 @@ setup(
     url='https://github.com/clausjuhl/almanak',
     include_package_data=True,
     license='MIT',
+    python_requires='>=3.6',
     install_requires=[
-        'click >= 6.7',
+        'click',
     ],
     entry_points="""
         [console_scripts]
-        almanak = almanak.scripts.cli:hello
+        almanak=almanak.scripts.cli:hello
     """,
     classifiers=[
         "Programming Language :: Python :: 3",
