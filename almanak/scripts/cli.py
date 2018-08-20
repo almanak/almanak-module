@@ -1,4 +1,5 @@
 import click
+from almanak.compression import compress, decompress
 
 @click.group(name='alnamak')
 def cli():
@@ -13,7 +14,7 @@ def cli():
     help='specify alternate output-filepath')
 @click.option('--overwrite', is_flag=True, help='overwrite any existing file')
 @click.argument('path', type=click.Path(exists=True, resolve_path=True))
-def compress(path, target, overwrite):
+def compress_cmd(path, target, overwrite):
     """
     Saves a Zip64-compressed copy of PATH in its parent-directory or TARGET.
     Use OVERWRITE to overwrite any existing file with same filename.
@@ -29,7 +30,7 @@ def compress(path, target, overwrite):
 @click.option('--overwrite', is_flag=True,
     help='overwrite any existing file or directory')
 @click.argument('path', type=click.Path(exists=True, resolve_path=True))
-def decompress(path, target, overwrite):
+def decompress_cmd(path, target, overwrite):
     """
     Decompresses a zipfile PATH into its parent-directory or TARGET.
     Use OVERWRITE to overwrite any existing file or directory with same name.

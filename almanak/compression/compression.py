@@ -59,7 +59,7 @@ def compress(path, target=None, overwrite=False):
     '''
     try:
         in_path = Path(path)  # ensure a Path-object
-    except Exception as e:
+    except Exception:
         return False
 
     # if not in_path.exists(): 
