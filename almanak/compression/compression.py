@@ -1,12 +1,12 @@
 from pathlib import Path
-# import os
 import zipfile
+import os
 
 
 try:
     import zlib
     cp = zipfile.ZIP_DEFLATED
-    # compresslevel = 9 - being introduced in 3.7
+    # compresslevel = 0-9 - being introduced in 3.7
 except:
     cp = zipfile.ZIP_STORED
     # compresslevel = None - being introduced in 3.7
@@ -30,19 +30,7 @@ def _invalid_zipfile(filepath):
         return "%s not a valid filepath" % filepath
 
 
-def _generate_filelist(_dir):
-    i = Path(_dir)  # ensure a Path-object
-    # return [path for path in i.rglob('*.*') if i.is_file]
-    return [path for path in i.rglob('*.*')]
-
-    # NOTE: Maybe os.walk is faster...
-    # for root, folders, files in os.walk(path):
-    #     for filestring in files:
-    #         out.append(os.path.join(root, filestring))
-    # return out
-
-
-def decompress(path, target=None, overwrite=False):
+def decompress(path, target=None, overwrite: bool = False) -> str:
     in_path = Path(path)
     invalid = _invalid_zipfile(in_path)
     if not invalid:
@@ -51,38 +39,42 @@ def decompress(path, target=None, overwrite=False):
         tg = Path(target) if target else in_path.with_name(in_path.stem)
         zip.extractall(tg)
         zip.close()
+    else:
+        return 
+    return 
 
-
-def compress(path, target=None, name=None, overwrite=False):
+def compress(path, target=None, name: str = None, overwrite: bool = False) -> str:
     '''
     Takes a string or Path-object representing a file or directory
     Compresses into zipfile in target_dir or same directory as path
     Gives it target_name if set or original name with 'zip'-extension.
     '''
     try:
-        in_path = Path(path)  # ensure a Path-object
+        # ensure Path-objects
+        in_path = Path(path)
+        out_dir = Path(target) if target else in_path.parent
     except Exception as e:
         raise e
     
-    # If no target_dir is set, choose parent-directory of the in_path,
-    # whether current in_path is a file or a directory.
-    out_dir = Path(target) if target else Path.joinpath(*in_path.parts[:-1])
-    
-    # If no name is set, use the path.stem, whether file or directory.
-    fn = name if name else in_path.with_name(in_path.stem + '.zip')
+    # Determine filename
+    if name:
+        out_name = name if name.endswith('.zip') else name + '.zip'
+    else:
+        out_name = in_path.stem + '.zip'
 
-    # If overwrite and save-path exists, save as _copy    
-    if (not overwrite) and Path(out_dir, fn).exists():
-        fn = fn.rsplit('.zip', 1)[0] + '_copy.zip'
+    if (not overwrite) and Path(out_dir, out_name).exists():
+        out_name = out_name.rsplit('.zip', 1)[0] + '_copy.zip'
 
-    # Construct a list of Paths to iterate, whether file or directory.
-    pathlist = [in_path] if in_path.is_file else _generate_filelist(in_path)
+    out_path = out_dir / out_name
 
-    with zipfile.ZipFile(out_dir / fn, mode='w', compression=cp) as arc:
-        for path in pathlist:
-            if in_path.is_file:
-                arc.write(path)
+    try:
+        with zipfile.ZipFile(out_path, mode='w', compression=cp) as arc:
+            if in_path.is_file():
+                arc.write(in_path, in_path.relative_to(in_path.parent))
             else:
-                arc.write(path.relative_to(in_path))
-                # archive.write(path, os.path.relpath(path, path.parents))
-
+                for path in in_path.rglob('*.*'):
+                    arc.write(path, path.relative_to(in_path))
+                    # arc.write(path, os.path.relpath(path, path.parents))
+        return str(out_path)
+    except Exception as e:
+        raise e
