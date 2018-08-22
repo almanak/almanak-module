@@ -1,6 +1,7 @@
 from pathlib import Path
 import zipfile
 import os
+from datetime import datetime
 
 
 try:
@@ -30,6 +31,42 @@ def _invalid_zipfile(filepath):
         return "%s not a valid filepath" % filepath
 
 
+def extract(file_path, zip_path, out_path=None,
+            pwd=None, overwrite: bool = False) -> str:
+    try:
+        file_path = Path(file_path)
+        zip_path = Path(zip_path)
+        out_path = Path(out_path) if out_path else None
+    except Exception as e:
+        raise e
+
+    with zipfile.ZipFile(zip_path) as zip:
+        # https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.as_posix
+        return zip.extract(file_path.as_posix(), path=out_path, pwd=pwd)
+
+
+def info(file_path, pwd=None):
+    try:
+        in_file = Path(file_path)
+    except Exception as e:
+        raise e
+
+    if zipfile.is_zipfile(file_path):
+        # opening the zip file in READ mode
+        with zipfile.ZipFile(file_path, 'r') as zip:
+            for info in zip.infolist():
+                print(info.filename)
+                print('\tModified:\t' + str(datetime(*info.date_time)))
+                print('\tSystem:\t\t' + str(info.create_system) + '(0 = Windows, 3 = Unix)')
+                print('\tCompressed:\t' + str(info.compress_size) + ' bytes')
+                print('\tOriginal:\t' + str(info.file_size) + ' bytes')
+
+    elif in_file.is_file():
+        print("The supplied path is a file.")
+    else:
+        raise Exception 
+
+
 def decompress(path, target=None, overwrite: bool = False) -> str:
     in_path = Path(path)
     invalid = _invalid_zipfile(in_path)
@@ -50,7 +87,6 @@ def compress(path, target=None, name: str = None, overwrite: bool = False) -> st
     Gives it target_name if set or original name with 'zip'-extension.
     '''
     try:
-        # ensure Path-objects
         in_path = Path(path)
         out_dir = Path(target) if target else in_path.parent
     except Exception as e:
@@ -70,6 +106,7 @@ def compress(path, target=None, name: str = None, overwrite: bool = False) -> st
     try:
         with zipfile.ZipFile(out_path, mode='w', compression=cp) as arc:
             if in_path.is_file():
+                # REFACTOR - must be a better way
                 arc.write(in_path, in_path.relative_to(in_path.parent))
             else:
                 for path in in_path.rglob('*.*'):

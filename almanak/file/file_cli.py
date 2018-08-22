@@ -1,13 +1,45 @@
 import click
-from .file import compress, decompress
+from .file import compress, decompress, extract, info
 
 
 @click.group(name='file')
 def file_cli():
+    '''
+    Operations on a single file or directory (zip)
+    '''
     pass
 
 
-@click.command('compress', short_help='zip-compress file or folder')
+@click.command('info', short_help='info on a file or zip-archive')
+@click.argument('path', type=click.Path(exists=True, resolve_path=True))
+def info_cmd(path):
+    '''
+    Get information on a file (incl. zip-archives)
+    '''
+    # click.echo_via_pager('\n'.join('Line %d' % idx
+    #                                for idx in range(200)))
+    click.echo(info(path))
+
+
+@click.command('extract', short_help='extract file from zip-archive')
+@click.argument('file', type=click.Path())
+@click.argument('archive', type=click.Path(exists=True))
+@click.option('--target-dir', type=click.Path(writable=True, resolve_path=True),
+              help='specify a different directory to extract to')
+@click.option('--overwrite', is_flag=True, help='overwrite any existing file')
+def extract_cmd(file, archive, target_dir, overwrite):
+    '''
+    Extracts a <file> from a zip-archive.
+    '''
+    try:
+        out_path = extract(file_path=file, zip_path=archive,
+                           out_path=target_dir, overwrite=overwrite)
+    except Exception as e:
+        click.echo(e)
+    # click.echo('INFO: extracted file to: ' + str(out_path))
+
+
+@click.command('compress', short_help='zip-compress file or directory')
 # Optional dir and filename. Also overwrite, but I do not think it works.
 @click.option('--target-dir', type=click.Path(writable=True, resolve_path=True),
     help='specify a different directory to compress to')
@@ -40,5 +72,10 @@ def decompress_cmd(path, target_dir, overwrite):
     click.echo('overwrite: ' + str(overwrite))
 
 
+file_cli.add_command(extract_cmd)
 file_cli.add_command(compress_cmd)
 file_cli.add_command(decompress_cmd)
+# file_cli.add_command(validate_cmd)
+# file_cli.add_command(identify_mcd)
+# file_cli.add_command(hash_cmd)
+file_cli.add_command(info_cmd)
