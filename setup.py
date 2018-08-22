@@ -1,5 +1,3 @@
-pip#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
 with open("README.rst", "r") as fh:
@@ -7,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setup(
     name='almanak',
-    version='0.1.1',
+    version='0.1.2',
     author='Claus Juhl Knudsen',
     author_email='clausjuhl@yahoo.com',
     packages=find_packages(),
@@ -18,7 +16,7 @@ setup(
     license='MIT',
     python_requires='>=3.6.2',
     install_requires=[
-        'click==6.7',
+        'click>=6.7',
     ],
     entry_points="""
         [console_scripts]
