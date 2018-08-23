@@ -77,21 +77,22 @@ def decompress(path, target=None, overwrite: bool = False) -> str:
         zip.extractall(tg)
         zip.close()
     else:
-        return 
-    return 
+        return True
+    return True
+
 
 def compress(path, target=None, name: str = None, overwrite: bool = False) -> str:
     '''
     Takes a string or Path-object representing a file or directory
-    Compresses into zipfile in target_dir or same directory as path
-    Gives it target_name if set or original name with 'zip'-extension.
+    Compresses into zipfile in target or same directory as path
+    Gives it name or original name with 'zip'-extension.
     '''
     try:
         in_path = Path(path)
         out_dir = Path(target) if target else in_path.parent
     except Exception as e:
         raise e
-    
+
     # Determine filename
     if name:
         out_name = name if name.endswith('.zip') else name + '.zip'
@@ -100,7 +101,7 @@ def compress(path, target=None, name: str = None, overwrite: bool = False) -> st
 
     if (not overwrite) and Path(out_dir, out_name).exists():
         out_name = out_name.rsplit('.zip', 1)[0] + '_copy.zip'
-
+    # Path-syntax
     out_path = out_dir / out_name
 
     try:

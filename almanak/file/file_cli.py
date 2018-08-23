@@ -1,5 +1,12 @@
 import click
 from .file import compress, decompress, extract, info
+import logging
+
+
+# setup logging
+logging.basicConfig(filename='almanak_cli.log',
+                    level=logging.DEBUG,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s')
 
 
 @click.group(name='file')
@@ -24,9 +31,11 @@ def info_cmd(path):
 @click.command('extract', short_help='extract file from zip-archive')
 @click.argument('file', type=click.Path())
 @click.argument('archive', type=click.Path(exists=True))
-@click.option('--target-dir', type=click.Path(writable=True, resolve_path=True),
+@click.option('--target-dir',
+              type=click.Path(writable=True, resolve_path=True),
               help='specify a different directory to extract to')
-@click.option('--overwrite', is_flag=True, help='overwrite any existing file')
+@click.option('--overwrite', is_flag=True,
+              help='overwrite any existing file or directory')
 def extract_cmd(file, archive, target_dir, overwrite):
     '''
     Extracts a <file> from a zip-archive.
@@ -34,25 +43,40 @@ def extract_cmd(file, archive, target_dir, overwrite):
     try:
         out_path = extract(file_path=file, zip_path=archive,
                            out_path=target_dir, overwrite=overwrite)
+        ctx = click.get_current_context()
+        for k, v in ctx.params.items():
+            click.echo("ctx-key: " + str(k) + ", ctx-value: " + str(v))
+        click.echo(type(ctx.params))
+        # if click.get_current_context().verbose:
+        #     click.echo('INFO: zip-member extracted to: ' + out_path)
+        # else:
+        #     click.echo('This is not printet to stout, as verbose is not set')
     except Exception as e:
-        click.echo(e)
-    # click.echo('INFO: extracted file to: ' + str(out_path))
+        click.echo('Error: ' + str(e))
 
 
 @click.command('compress', short_help='zip-compress file or directory')
 # Optional dir and filename. Also overwrite, but I do not think it works.
-@click.option('--target-dir', type=click.Path(writable=True, resolve_path=True),
-    help='specify a different directory to compress to')
+@click.option('--target-dir',
+              type=click.Path(writable=True, resolve_path=True),
+              help='specify a different directory to compress to')
 @click.option('--target-name', type=click.STRING,
-    help='specify a new name for the zip-file. Leave out the ".zip"-extension')
+              help='specify a new name for the zip-file.')
 @click.option('--overwrite', is_flag=True, help='overwrite any existing file')
 @click.argument('path', type=click.Path(exists=True, resolve_path=True))
 def compress_cmd(path, target_dir, target_name, overwrite):
     """
     Saves a zip-compressed copy of <PATH> in the same directory.
     """
-    zip_path = compress(path, target=target_dir, name=target_name, overwrite=overwrite)
-    click.echo('INFO: zip-file created: ' + str(zip_path))
+    try:
+        zip_path = compress(path, target=target_dir, name=target_name,
+                            overwrite=overwrite)
+        if click.get_current_context().verbose is True:
+            click.echo('INFO: zip-file created: ' + zip_path)
+        else:
+            click.echo('This is not printet to stout, as verbose is not set')
+    except Exception as e:
+        click.echo('Error: ' + str(e))
 
 
 @click.command('decompress', short_help='decompress a zipfile')

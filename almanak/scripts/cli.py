@@ -1,9 +1,10 @@
 import click
 from almanak.file import file_cli as _file
 
-
+@click.option('--verbose', is_flag=True, default=False,
+              help='ouput all log-levels to strout')
 @click.group(name='almanak')
-def cli():
+def cli(verbose=False):
     '''
     Almanak CLI. Tools, services and workflows for almanak-repos.
     '''
