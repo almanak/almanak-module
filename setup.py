@@ -15,13 +15,6 @@ setup(
     include_package_data=True,
     license='MIT',
     python_requires='>=3.6.2',
-    # install_requires=[
-    #     'click>=6.7',
-    # ],
-    # entry_points="""
-    #     [console_scripts]
-    #     almanak=almanak.scripts.cli:cli
-    # """,
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: MIT License",
