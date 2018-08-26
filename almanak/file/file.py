@@ -1,3 +1,5 @@
+# file-module used by the file_cli-commands (and
+# possibly other modules)
 from pathlib import Path
 import zipfile
 import os
@@ -8,7 +10,7 @@ try:
     import zlib
     cp = zipfile.ZIP_DEFLATED
     # compresslevel = 0-9 - being introduced in 3.7
-except:
+except ImportError:
     cp = zipfile.ZIP_STORED
     # compresslevel = None - being introduced in 3.7
 
@@ -18,7 +20,7 @@ def _invalid_zipfile(filepath):
     Checks both the zip-container and the files within.
     Returns None if valid, else some error-string
     '''
-    if Path(filepath).exists():
+    if Path(filepath) and Path(filepath).exists():
         # Test if the filepath points to a .zip-file with a valid container
         try:
             zfile = zipfile.ZipFile(filepath, 'r')
@@ -33,38 +35,38 @@ def _invalid_zipfile(filepath):
 
 def extract(file_path, zip_path, out_path=None,
             pwd=None, overwrite: bool = False) -> str:
-    try:
-        file_path = Path(file_path)
-        zip_path = Path(zip_path)
-        out_path = Path(out_path) if out_path else None
-    except Exception as e:
-        raise e
+    '''
+    filepath: str or Path. File to extract \n
+    zip_path: str or Path of the zip-archive \n
+    out_path: str or Path. Alternate output-path
+    pdw: str. Password. Required if zip_archive is password-protected
+    overwrite: bool. If file_path exists in output_path, overwrite 
+    '''
+    file_path = Path(file_path)
+    zip_path = Path(zip_path)
+    out_path = Path(out_path) if out_path else None
 
     with zipfile.ZipFile(zip_path) as zip:
+        # extract only accepts filepath as posix-string
         # https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.as_posix
         return zip.extract(file_path.as_posix(), path=out_path, pwd=pwd)
 
 
-def info(file_path, pwd=None):
-    try:
-        in_file = Path(file_path)
-    except Exception as e:
-        raise e
+def fileinfo(file_path, pwd=None):
+    in_file = Path(file_path)
 
-    if zipfile.is_zipfile(file_path):
+    if zipfile.is_zipfile(in_file):
         # opening the zip file in READ mode
-        with zipfile.ZipFile(file_path, 'r') as zip:
+        with zipfile.ZipFile(in_file, 'r') as zip:
             for info in zip.infolist():
+                # use yield instead of print
                 print(info.filename)
                 print('\tModified:\t' + str(datetime(*info.date_time)))
                 print('\tSystem:\t\t' + str(info.create_system) + '(0 = Windows, 3 = Unix)')
                 print('\tCompressed:\t' + str(info.compress_size) + ' bytes')
                 print('\tOriginal:\t' + str(info.file_size) + ' bytes')
-
-    elif in_file.is_file():
-        print("The supplied path is a file.")
     else:
-        raise Exception 
+        yield("The supplied path is a file.")
 
 
 def decompress(path, target=None, overwrite: bool = False) -> str:

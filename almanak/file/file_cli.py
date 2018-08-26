@@ -1,13 +1,9 @@
 import click
-from .file import compress, decompress, extract, info
 import logging
 
+from .file import compress, decompress, extract, fileinfo
 
-# setup logging
-logging.basicConfig(filename='almanak_cli.log',
-                    level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s')
-
+logger = logging.getLogger(__name__)
 
 @click.group(name='file')
 def file_cli():
@@ -25,8 +21,11 @@ def info_cmd(path):
     '''
     # click.echo_via_pager('\n'.join('Line %d' % idx
     #                                for idx in range(200)))
-    click.echo(info(path))
-
+    try:
+        click.echo(fileinfo(path))
+    except Exception as e:
+        logger.error("something went wrong")
+        logger.exception(e)
 
 @click.command('extract', short_help='extract file from zip-archive')
 @click.argument('file', type=click.Path())
@@ -38,7 +37,7 @@ def info_cmd(path):
               help='overwrite any existing file or directory')
 def extract_cmd(file, archive, target_dir, overwrite):
     '''
-    Extracts a <file> from a zip-archive.
+    Extracts a <file> from a <archive> (zip-formatted).
     '''
     try:
         out_path = extract(file_path=file, zip_path=archive,
@@ -51,8 +50,9 @@ def extract_cmd(file, archive, target_dir, overwrite):
         #     click.echo('INFO: zip-member extracted to: ' + out_path)
         # else:
         #     click.echo('This is not printet to stout, as verbose is not set')
-    except Exception as e:
-        click.echo('Error: ' + str(e))
+    except Exception:
+        logger.exception('unable to extact file from zip-archive')
+        raise
 
 
 @click.command('compress', short_help='zip-compress file or directory')
