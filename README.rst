@@ -1,3 +1,1 @@
-# almanak
-
 Module for almanak.
