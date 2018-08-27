@@ -16,6 +16,7 @@ setup(
     license='MIT',
     python_requires='>=3.6.2',
     classifiers=[
+        "Development Status :: 2 - Pre-Alpha",
         "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",

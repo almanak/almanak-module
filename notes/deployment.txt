@@ -8,3 +8,4 @@ $ twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 After pushing new version to pypi.org, fetch it like so to use it.
 pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple almanak
+# --extrax-index-url pointing to normal pypi is used to enable fetching of click and other needed libraries
