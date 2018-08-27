@@ -5,11 +5,11 @@ with open("README.rst", "r") as fh:
 
 setup(
     name='almanak',
-    version='0.1.3',
+    version='0.1.4',
     author='Claus Juhl Knudsen',
     author_email='clausjuhl@yahoo.com',
     packages=find_packages(),
-    description='Almanak-module.',
+    description='Module for almanak-services.',
     long_description=long_description,
     url='https://github.com/clausjuhl/almanak',
     include_package_data=True,
