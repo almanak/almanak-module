@@ -1,0 +1,89 @@
+Inventory-notes
+
+Efter hver modtaget scan, skrives til loggen og der sendes en streng til standard-out
+De fleste kommandoer kræver at statuslisten allerede er hentet
+Scanning uden kommando bør vel bare give type, status, placering eller andet info for stregkoden 
+Der skal altid skrives til loal csv-fil, som synkroniseres ved sync-kommandoen
+Opstart skal altid ske online, da structure.json og status.csv skal hentes inden arbejdet begynder
+
+:: FILES
+Structure.json 		rum/reol/fag/hylde-hierarki. Statisk fil for institution, der hentes ned ved opstart.
+status.csv 			statusliste med æske-stregkoder og deres status, bruger, datering, placering...
+					timestamp/barcode/shelf_barcode/userid/username/status/requesttype
+					20901221 6204439101 32323244212 earkivar@gmail.com Claus Juhl Knudsen ordered
+
+:: COMMANDLINE PARAMS
+help	hjælpetekst vises
+put		tilbage på den korrekte hylde - scan hylde-stregkoden først
+		ikke tilladt med mindre stregkoden har status return
+fetch	tag fra den korrekte hylde - scan hylde-stregkoden først
+		kun tilladt hvis stregkoden ikke er i proces OG at stregkoden er æskekode-formateret
+sync	læser csv-filen ind i en json-array og sender til webservicen
+receive	markér som modtaget i depotrum og placér på hylde
+return	markér som færdig og placér på rullebord
+post	placér på hylden for første gang
+		først skal en hylde-stregkode scannes, og så er den klar til at modtage æske-stregkoder
+list	oplist alle æsker under proces (for en given institution)
+		virker kun med netforbindelse (eller hvad? I hvert fald)
+info	viser status og placering for en given æske-stregkode, hvis den er i proces
+		hvis man er online, kan den vel hente info fra oaws og vise indhold?
+		hvis hylde, fag, reol, så vises placering for denne, hvis del af strukturen
+		ellers melding om ukendt eller ikke genkendt stregkode
+missing	stregkoden skal vel indtastes?
+write	gå til keyboardinput-mode og modtag indtastet barcode
+
+
+:: QUESTIONS
+
+:: SCENARIOS
+Hvis man scanner en stregkode uden parametre, sker der følgende:
+Hvis man ikke kan læse stregkoden, kan man manuelt indtaste den og afslutte med Enter
+Hvis stregkoden er formel forkert (ikke Code128), ignoreres input og en fejlbesked vises
+
+
+:: PROCESSES
+
+INFO
+REQUIRES:
+1) Æske-, fag-, hylde- eller reol-stregkode
+
+POST
+REQUIRES:
+1) Æske-stregkode, der ikke er i systemet allerede
+2) Hylde (eksisterende i strukturen) med stregkode
+
+	Aktion:						Output:
+	Skyd 'post'-stregkode		"Scan en hylde-stregkode"
+	Skyd en hylde-stregkoden 	"Scan en æske-stregkode"
+	Skyd en æske-stregkode 		"Ny æske er pladsregistreret."
+
+PUT
+REQUIRES:
+1) Æske-stregkoden skal have status "returned" i statuslisten
+2) hylde-stregkoden skal matche den scannede
+	Aktion:						Output:
+	Skyd 'put'-stregkode 		"Scan hylde-stregkoden"
+	Skyd hylde-stregkoden		"Scan æske-stregkoden"
+	Skyd æske-stregkoden		"Æsken er registreret som placeret på sin rette plads."
+
+FETCH
+REQUIRES:
+1) Æske-stregkoden skal have status "ordered" i statuslisten
+	Aktion:						Output:
+	Skyd 'fetch'-stregkode 		"Scan hylde-stregkoden"
+	Skyd hylde-stregkoden		"Scan æske-stregkoden"
+	Skyd æske-stregkoden		"Æsken er registreret som hentet."
+
+RECEIVE
+REQUIRES:
+1) æske-stregkoden skal have status "fetched" i statuslisten
+	Aktion:						Output:
+	Skyd 'receive-stregkode'	"Scan æske-stregkoden"
+	Skyd æske-stregkoden		"Æsken er nu registrert som modtaget til læsesal. Fortsæt"
+
+RETURN
+REQUIRES:
+Den aktuelle æske-stregkode skal have status "received" i statuslisten
+	Aktion:						Output:
+	Skyd 'return'-stregkoden 	"Scan æske-stregkoden"
+	Skyd æske-stregkoden		"Æsken er registreret som færdigudlånt"
