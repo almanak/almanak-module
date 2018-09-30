@@ -1,5 +1,31 @@
 Inventory-notes
 
+DATAMODELS
+class Order():
+	id
+	created_at
+    updated_at
+	client_id = int
+	-------------------------
+    container_id = string (often box_barcode or EnhedsID, but not allways)
+	resource_id = string
+    status = enum
+	-------------------------
+    user_id = uuid
+    user_name = string
+
+
+class Structure():
+	id
+	created_at
+    updated_at
+	client_id = int
+	-------------------------
+	label = string
+    path = list (often box_barcode or EnhedsID, but not allways)
+
+
+
 Efter hver modtaget scan, skrives til loggen og der sendes en streng til standard-out
 De fleste kommandoer kræver at statuslisten allerede er hentet
 Scanning uden kommando bør vel bare give type, status, placering eller andet info for stregkoden 

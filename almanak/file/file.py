@@ -1,5 +1,6 @@
-# file-module used by the file_cli-commands (and
-# possibly other modules)
+# file-module
+# NOTE: This module only works on local files and directories. Not cloud-based
+
 from pathlib import Path
 import zipfile
 import os
@@ -9,10 +10,10 @@ from datetime import datetime
 try:
     import zlib
     cp = zipfile.ZIP_DEFLATED
-    # compresslevel = 0-9 - being introduced in 3.7
+    # compresslevel = 0-9 - to be introduced in 3.7
 except ImportError:
     cp = zipfile.ZIP_STORED
-    # compresslevel = None - being introduced in 3.7
+    # compresslevel = None - to be introduced in 3.7
 
 
 def _invalid_zipfile(filepath):
@@ -41,6 +42,8 @@ def extract(file_path, zip_path, out_path=None,
     out_path: str or Path. Alternate output-path
     pdw: str. Password. Required if zip_archive is password-protected
     overwrite: bool. If file_path exists in output_path, overwrite 
+
+    NOTE. This works on the local filesystem, and not on a cloud-service
     '''
     file_path = Path(file_path)
     zip_path = Path(zip_path)

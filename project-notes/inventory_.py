@@ -6,39 +6,7 @@ import json
 import datetime
 from google.appengine.ext import ndb
 
-BASE_URL = "https://inventory-api.appspot.com/v1"
-VALID_CLIENTS = ["aarhusstadsarkiv"]
-VALID_APPLICATIONS = ["readingroom", "vesteralle", "aarhusarkivet"]
 STATUS_CHOICES = ["ordered", "fetched", "received", "finished", "returned", "missing"]
-
-
-def _ndb_model_to_dict(data):
-    """Build a new dict so that the data can be JSON serializable"""
-    result = data.to_dict()
-    record = {}
-    # Populate the new dict with JSON serializiable values
-    for key in result.iterkeys():
-        if isinstance(result[key], datetime.datetime):
-            record[key] = result[key].isoformat()
-            continue
-        record[key] = result[key]
-
-    return record
-
-
-def _make_serializable(data):
-    """Make NDB Query or Model serializable to JSON"""
-    output = []
-
-    # check if data is a list (multiple records) or not (single record)
-    if type(data) != list:
-        record = _ndb_model_to_dict(data)
-        return record
-
-    for entry in data:
-        output.append(_ndb_model_to_dict(entry))
-
-    return output
 
 
 class Order(ndb.Model):
@@ -103,23 +71,6 @@ class JsonHandler(webapp2.RequestHandler):
 
 
 class InventoryListHandler(JsonHandler):
-    def get(self, user_id=None):
-        """Fetch all active orders from an institution"""
-        if self.valid_request():
-            email = self.request.get('email')
-            client = self.request.headers.get('x-almanak-client-id')
-            orders = []
-
-            if user_id:
-                orders = Order.query(Order.client == client,
-                                     Order.userID == user_id).order(-Order.updatedAt).fetch()
-            elif email:
-                orders = Order.query(Order.client == client,
-                                     Order.userID == email).order(-Order.updatedAt).fetch()
-            else:
-                orders = Order.query(Order.client == client).order(-Order.updatedAt).fetch()
-
-            self.render(_make_serializable(orders))
 
     def post(self):
         """Add an order to an institution's orderlist"""
@@ -239,7 +190,6 @@ class StructureItemHandler(JsonHandler):
         """Fetch the structure.json from a single archival space"""
         if self.valid_request():
             structure = Structure.get_by_id(structure_label)
-
             if structure and structure.client == self.request.headers.get("x-almanak-client-id"):
                 # structure.structure is a JsonProperty and thus already serializable
                 self.render(structure.structure)
