@@ -2,27 +2,42 @@ Inventory-notes
 
 DATAMODELS
 class Order():
-	id
+	uuid
+	client_id = int
 	created_at
     updated_at
-	client_id = int
 	-------------------------
-    container_id = string (often box_barcode or EnhedsID, but not allways)
+	structure_id = barcode (id of structure, allways a barcode?)
+    storage_unit_id = string (often box_barcode or EnhedsID, but not allways)
 	resource_id = string
     status = enum
 	-------------------------
     user_id = uuid
     user_name = string
+	user_email = email
 
 
 class Structure():
-	id
+	uuid
 	created_at
     updated_at
 	client_id = int
 	-------------------------
+	structure_id
 	label = string
+	type = enum (rack, shelf, drawer, freezer...) - maybe not enum, but just a helper-label
     path = list (often box_barcode or EnhedsID, but not allways)
+
+
+class Storage_unit():
+	uuid
+	client_id
+	created_at
+	updated_at
+	-------------------------
+	unit_id = string
+	unit_id_Type = enum (barcode, archival string, random string)
+	structure_id = barcode (allways?)
 
 
 

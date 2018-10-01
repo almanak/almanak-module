@@ -7,65 +7,49 @@ STATUS_CHOICES = ["ordered", "fetched",
                   "received", "finished", "returned", "missing"]
 
 
-#################
-# STORAGE_UNITS #
-#################
-def list_structures():
+##############
+# STRUCTURES #
+##############
+def get_structure(id: str):
+    return True
+    # return api.get(collection='storage_units', key=id)
+
+
+def list_structures(filters: Dict):
     return True
     # return api.list(collection='storage_units', filters=filters)
 
 
-def insert_structure():
+def insert_structure(data: Dict):
     return True
     # return api.insert(collection='storage_units', data=data)
 
-def update_structure():
+
+def update_structure(id: str, data: Dict):
     return True
-    # return api.update(collection='storage_units', id=id, data=data)
+    # return api.update(collection='storage_units', key=id, data=data)
 
 
-def delete_structure():
+def delete_structure(id: str):
     return True
-    # return api.delete(collection='storage_units', id=id)
+    # return api.delete(collection='storage_units', key=id)
 
-
-##########
-# ORDERS #
-##########
-def list_orders(filters: Dict = None):
-    return True
-    # return api.list(collection='orders', filters=filters)
-
-
-def insert_order():
-    return True
-    # return api.insert(collection='orders', data=data)
-
-
-def update_order():
-    return True
-    # return api.update(collection='orders', id=id, data=data)
-
-
-def delete_order():
-    return True
-    # return api.delete(collection='orders', id=id)
 
 #########
 # UNITS #
 #########
+def get_storage_unit(unit_id, projection=None):
+    partition_key = {'unit_id', unit_id}
+    unit = _get_item('storage_units', partition_key)
+    return unit or {'error': True, 'msg': 'Unable to query local db.'}
+
+
 def list_storage_units(user_id=None):
     kwargs = {}
     kwargs['table_name'] = 'storage_units'
     kwargs['pk'] = {'name': 'user_id', 'value': user_id}
     resp = _query_table(**kwargs)
     return resp
-
-
-def get_storage_unit(unit_id, projection=None):
-    partition_key = {'unit_id', unit_id}
-    unit = _get_item('storage_units', partition_key)
-    return unit or {'error': True, 'msg': 'Unable to query local db.'}
 
 
 def insert_storage_unit(item):
@@ -87,6 +71,11 @@ def get_order(user_id, resource_id):
     return _get_item('orders',
                      {'user_id': user_id},
                      {'resource_id': resource_id})
+
+
+def list_orders(filters: Dict = None):
+    return True
+    # return api.list(collection='orders', filters=filters)
 
 
 def list_orders(key, value, ids_only=False, limit=None):
@@ -111,7 +100,17 @@ def list_orders(key, value, ids_only=False, limit=None):
         return _query_table(**kwargs)
 
 
-def _insert_order(user_id, resource_id, unit_id):
+def update_order():
+    return True
+    # return api.update(collection='orders', id=id, data=data)
+
+
+def delete_order():
+    return True
+    # return api.delete(collection='orders', id=id)
+
+
+def insert_order(user_id, resource_id, unit_id):
     """
     """
     # Fetch entities
@@ -119,6 +118,7 @@ def _insert_order(user_id, resource_id, unit_id):
     if unit.get('error'):
         return unit
 
+    # Fetch user - need the email to send out confirmation
     user = get_user(user_id)
     if user.get('error'):
         return user
@@ -167,9 +167,12 @@ def _insert_order(user_id, resource_id, unit_id):
     else:
         return {'error': True, 'msg': 'Ukendt serverfejl. Bestillingen ikke gemt.'}
 
+    # return api.insert(collection='orders', data=data)
+
 
 def delete_order(user_id, resource_id):
-    """ Cancelled or finished or force-deleted by employee """
+    """Cancelled or finished or force-deleted by employee.
+    """
     deleted_order = _delete_item('orders',
                                  {
                                      'user_id': user_id,
