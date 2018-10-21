@@ -1,3 +1,3 @@
-from .file import compress, decompress, extract, fileinfo
+from almanak.file import compress, decompress, extract, fileinfo
 
 __ALL__ = ['compress', 'decompress', 'extract', 'fileinfo']

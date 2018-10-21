@@ -3,42 +3,49 @@ Inventory-notes
 DATAMODELS
 class Order():
 	uuid
-	client_id = int
+	client_id
 	created_at
-    updated_at
+    updated_at (seneste statusændring)
 	-------------------------
-	structure_id = barcode (id of structure, allways a barcode?)
-    storage_unit_id = string (often box_barcode or EnhedsID, but not allways)
-	resource_id = string
+	structural_unit_id = StructuralUnit.id -  barcode (id of structure, allways a barcode?)
+    storage_unit_id = StorageUnit.id - string (often box_barcode or EnhedsID, but not always)
+	resource_id = Record.id - string
     status = enum
 	-------------------------
-    user_id = uuid
+    user_id = User.id - uuid
     user_name = string
-	user_email = email
 
 
-class Structure():
+class StructuralUnit():
 	uuid
+	client_id
 	created_at
     updated_at
-	client_id = int
 	-------------------------
-	structure_id
-	label = string
-	type = enum (rack, shelf, drawer, freezer...) - maybe not enum, but just a helper-label
-    path = list (often box_barcode or EnhedsID, but not allways)
+	id (barcode? not allways: rooms, addresses...) - unique within a given client
+	label
+	type = enum (address, building, room, rack, shelf, drawer, freezer...) - maybe not enum, but just a helper-label
+    path = list of StructuralUnit.label (or id if no label)
 
 
-class Storage_unit():
+class StorageUnit():
+	# actually the container of the resource. often the resource itself
+	# a storage_unit is usually created the first time it is placed in/on/by... a StructuralUnit
 	uuid
 	client_id
 	created_at
 	updated_at
 	-------------------------
-	unit_id = string
-	unit_id_Type = enum (barcode, archival string, random string)
-	structure_id = barcode (allways?)
+	id = string
+	id_type = enum (barcode, controlled string, uncontrolled string)
+	storage_type = (box, shelf, folder, pipe, case...)
+	structural_unit_id = StructuralUnit.id barcode (allways?)
 
+
+PRINTS
+Single order - se Christians pdf
+All order-locations - liste med placeringsstier for alle ordrer. flere ordrer fra samme æske skal stadig
+vises i her sin linie (burde ikke forekomme)
 
 
 Efter hver modtaget scan, skrives til loggen og der sendes en streng til standard-out
@@ -74,8 +81,6 @@ missing	stregkoden skal vel indtastes?
 write	gå til keyboardinput-mode og modtag indtastet barcode
 
 
-:: QUESTIONS
-
 :: SCENARIOS
 Hvis man scanner en stregkode uden parametre, sker der følgende:
 Hvis man ikke kan læse stregkoden, kan man manuelt indtaste den og afslutte med Enter
@@ -97,6 +102,8 @@ REQUIRES:
 	Skyd 'post'-stregkode		"Scan en hylde-stregkode"
 	Skyd en hylde-stregkoden 	"Scan en æske-stregkode"
 	Skyd en æske-stregkode 		"Ny æske er pladsregistreret."
+
+
 
 PUT
 REQUIRES:
