@@ -161,11 +161,11 @@ class InventoryService(DatastoreConnector):
                     # log this
                     return {"error": "unable to fetch user to send mail"}
 
-                email = user["data"].get("email")
-                sent_mail = self.mail_service.send_mail("order_available", [email])
-                if sent_mail.get("error"):
-                    # log this
-                    return {"error": "unable to send mail to user"}
+                # email = user["data"].get("email")
+                # sent_mail = self.mail_service.send_mail("order_available", [email])
+                # if sent_mail.get("error"):
+                #     # log this
+                #     return {"error": "unable to send mail to user"}
 
                 return {"status": 200, "msg": "Location of unit updated. Mail sent."}
 

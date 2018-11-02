@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setup(
     name='almanak',
-    version='0.2.0',
+    version='0.2.1',
     author='Claus Juhl Knudsen',
     author_email='clausjuhl@yahoo.com',
     packages=find_packages(),
@@ -15,6 +15,11 @@ setup(
     include_package_data=True,
     license='MIT',
     python_requires='>=3.6.2',
+    install_requires=[
+        'boto3',
+        'google-cloud-datastore',
+        'python-dotenv',
+    ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Programming Language :: Python :: 3.6",
