@@ -1,10 +1,10 @@
 When inside the virtualenv, via pipenv shell
 
-update setup.py, version if necessary
-$ git commit
-$ python setup.py sdist
-$ python setup.py bdist_wheel
-$ twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+1. update version in setup.py if necessary
+2. $ git commit
+3. $ python setup.py sdist
+4. $ python setup.py bdist_wheel
+5. $ twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 After pushing new version to pypi.org, fetch it like so to use it.
 pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple almanak
