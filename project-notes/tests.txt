@@ -1,0 +1,33 @@
+import os
+from pprint import pprint as pp
+from almanak.cloud import InventoryService
+inv = InventoryService(os.environ.get('ALMANAK_INVENTORY_CREDENTIALS'))
+
+
+pp(inv.list_storage_units(ids_only=True))
+
+
+INSERT STRUCTURAL_UNIT
+pp(inv.insert_structural_unit({"type": "reol", "id": "124013192", "label": "Reol 1", "location": "Vester Alle 12/Magasin 001"}))
+pp(inv.insert_structural_unit({"type": "fag", "id": "124013192", "label": "Fag 2", "location": "Vester Alle 12/Magasin 001", "path": ["uuid_of_reol_1"], "path_label": "Reol 1"}))
+pp(inv.insert_structural_unit({"type": "fag", "id": "124013122", "label": "Fag 1", "location": "Vester Alle 12/Magasin 001", "path": ["uuid_of_reol_1"], "path_label": "Reol 1"}))
+pp(inv.insert_structural_unit({"type": "hylde", "id": "124013141", "label": "Hylde 1", "location": "Vester Alle 12/Magasin 001", "path": ["uuid_of_reol_1", "uuid_of_fag 2"], "path_label": "Reol 1/Fag 2"}))
+pp(inv.insert_structural_unit({"type": "hylde", "id": "124013151", "label": "Hylde 2", "location": "Vester Alle 12/Magasin 001", "path": ["uuid_of_reol_1", "uuid_of_fag 2"], "path_label": "Reol 1/Fag 2"}))
+pp(inv.insert_structural_unit({"type": "hylde", "id": "124013161", "label": "Hylde 1", "location": "Vester Alle 12/Magasin 001", "path": ["uuid_of_reol_1", "uuid_of_fag 1"], "path_label": "Reol 1/Fag 1"}))
+
+INSERT STORAGE_UNIT
+pp(inv.insert_storage_unit({"type": "box", "id": "124013145", "current_location": "archive", "structural_unit_id": "6b270c64-39e6-43df-bc75-83fff699ea79"}))
+pp(inv.insert_storage_unit({"type": "protocol", "id": "2912104429322", "current_location": "archive", "structural_unit_id": "a1da71ce-1bb7-4780-993d-de6fcf76dacc"}))
+pp(inv.insert_storage_unit({"type": "protocol", "id": "2912104422312", "current_location": "archive", "structural_unit_id": "a1da71ce-1bb7-4780-993d-de6fcf76dacc"}))
+pp(inv.insert_storage_unit({"type": "box", "id": "91+0238211-3", "current_location": "archive", "structural_unit_id": "6b270c64-39e6-43df-bc75-83fff699ea79"}))
+pp(inv.insert_storage_unit({"type": "box", "id": "91+0432906-1", "current_location": "archive", "structural_unit_id": "e3472b43-629d-4f96-8988-c939eed1d778"}))
+
+INSERT ORDERS
+pp(inv.insert_order({"resource_id": "000182514", "storage_unit_id": "0c865ae4-fe46-4344-aa97-d8f3f9717794", "user_id": "facebook|2032352547002349"}, "Claus Juhl"))
+pp(inv.insert_order({"resource_id": "000233846", "storage_unit_id": "52d085fc-0d5d-447a-b36b-78efe4a0f248", "user_id": "facebook|2032352547002349"}, "Claus Juhl"))
+pp(inv.insert_order({"resource_id": "000182514", "storage_unit_id": "0c865ae4-fe46-4344-aa97-d8f3f9717794", "user_id": "windowslive|edad885b45af17c3"}, "Claus Juhl"))
+pp(inv.insert_order({"resource_id": "000151436", "storage_unit_id": "88d02817-68d6-4ef7-a5a2-0672850dfdf4", "user_id": "auth0|5a546367cb263252d9bc2835"}, "Claus Juhl"))
+pp(inv.insert_order({"resource_id": "000182514", "storage_unit_id": "0c865ae4-fe46-4344-aa97-d8f3f9717794", "user_id": "facebook|2032352547002349"}, "Claus Juhl"))
+pp(inv.insert_order({"resource_id": "000184237", "storage_unit_id": "a1225d38-feb3-4677-ad4a-6f17a680806a", "user_id": "auth0|5a546367cb263252d9bc2835"}, "Claus Juhl"))
+
+delete this order: '437a80f6-de7f-11e8-a05b-3200e8307301'

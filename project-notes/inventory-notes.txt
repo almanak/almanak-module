@@ -1,47 +1,5 @@
 Inventory-notes
 
-DATAMODELS
-class Order():
-	uuid
-	client_id
-	created_at
-    updated_at (seneste statusændring)
-	-------------------------
-	structural_unit_id = StructuralUnit.id -  barcode (id of structure, allways a barcode?)
-    storage_unit_id = StorageUnit.id - string (often box_barcode or EnhedsID, but not always)
-	resource_id = Record.id - string
-    status = enum
-	-------------------------
-    user_id = User.id - uuid
-    user_name = string
-
-
-class StructuralUnit():
-	uuid
-	client_id
-	created_at
-    updated_at
-	-------------------------
-	id (barcode? not allways: rooms, addresses...) - unique within a given client
-	label
-	type = enum (address, building, room, rack, shelf, drawer, freezer...) - maybe not enum, but just a helper-label
-    path = list of StructuralUnit.label (or id if no label)
-
-
-class StorageUnit():
-	# actually the container of the resource. often the resource itself
-	# a storage_unit is usually created the first time it is placed in/on/by... a StructuralUnit
-	uuid
-	client_id
-	created_at
-	updated_at
-	-------------------------
-	id = string
-	id_type = enum (barcode, controlled string, uncontrolled string)
-	storage_type = (box, shelf, folder, pipe, case...)
-	structural_unit_id = StructuralUnit.id barcode (allways?)
-
-
 PRINTS
 Single order - se Christians pdf
 All order-locations - liste med placeringsstier for alle ordrer. flere ordrer fra samme æske skal stadig

@@ -5,7 +5,7 @@ from os import environ as env
 from boto3 import client
 
 
-class CloudsearchConnector():
+class CloudsearchConnector:
     """Search: CRUD
     """
     def __init__(self):
