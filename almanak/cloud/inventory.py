@@ -108,11 +108,11 @@ class InventoryService(DatastoreConnector):
             data (dict):
                 id (str): barcode, unit_id, eg. '91+000923-1'
                 type (str): freeform type, eg. "box" or "protokol"
-                current_location (str): archive, readingroom, in transit...
+                current_location (str): archive, readingroom, staged...
                 structural_unit_id (str): uuid of the closest structural_unit
             username (str): username
 
-        Returns:   
+        Returns:
             dict with 'status', plus 'data' or 'error'
         """
         resp = self._insert("storage_unit", data, username=username)
@@ -181,7 +181,7 @@ class InventoryService(DatastoreConnector):
     # ORDERS #
     ##########
     def insert_order(self, data, username):
-        """Inserts an order on a given resource situated in a certain
+        """Creates an order for a given resource situated in a certain
         storage_unit.
 
         Args:
@@ -200,7 +200,7 @@ class InventoryService(DatastoreConnector):
 
         # If the existing order-call fails, return
         if resp.get("error"):
-            return {"error": resp.get("error")}
+            return resp
 
         # setup order
         order = {

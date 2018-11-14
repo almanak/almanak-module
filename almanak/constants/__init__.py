@@ -28,7 +28,7 @@ ORDER_FILTERS = ["user_id", "client_id", "resource_id", "status"]
 STRUCTURAL_UNIT_FILTERS = ["client_id", "path"]
 
 # Possible locations for an archival_unit
-UNIT_LOCATIONS = ["archive", "readingroom", "exported", "transit", "unknown"]
+UNIT_LOCATIONS = ["archive", "staged", "readingroom", "returned", "exported", "unknown"]
 
 # Possible statuses for a given order
 ORDER_STATUS = ["initialized", "available", "terminated"]

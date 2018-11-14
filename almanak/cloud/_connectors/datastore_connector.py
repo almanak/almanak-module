@@ -27,33 +27,82 @@ class DatastoreConnector:
         Returns:
             dict: status (int), plus 'error' (str) or 'data' (list)
         """
-        now = datetime.utcnow().isoformat()
+        return self._multi_insert(resource, [data], username)
 
-        data["client_id"] = int(env.get("ALMANAK_CLIENT_ID"))
-        data["created"] = now
-        data["created_by"] = username
-        data["updated"] = now
-        data["updated_by"] = username
+        # now = datetime.utcnow().isoformat()
 
-        # Use uuid4 for persistent resources, else use timestamp
-        if resource in PERSISTENT_RESOURCES:
-            uuid = str(uuid4())
-        elif resource in TEMPORAL_RESOURCES:
-            uuid = str(uuid1())
-        else:
-            raise ValueError("No such resource: " + resource)
+        # data["client_id"] = int(env.get("ALMANAK_CLIENT_ID"))
+        # data["created"] = now
+        # data["created_by"] = username
+        # data["updated"] = now
+        # data["updated_by"] = username
 
-        # set the uuid as the key and its own property
-        data["uuid"] = uuid
-        key = self.db.key(resource, uuid)
-        # Initialize and populate
-        entity = datastore.Entity(key=key)
-        entity.update(data)
+        # # Use uuid4 for persistent resources, else use timestamp
+        # if resource in PERSISTENT_RESOURCES:
+        #     uuid = str(uuid4())
+        # elif resource in TEMPORAL_RESOURCES:
+        #     uuid = str(uuid1())
+        # else:
+        #     raise ValueError("No such resource: " + resource)
+
+        # # set the uuid as the key and its own property
+        # data["uuid"] = uuid
+        # key = self.db.key(resource, uuid)
+        # # Initialize and populate
+        # entity = datastore.Entity(key=key)
+        # entity.update(data)
+        # try:
+        #     self.db.put(entity)
+        #     return {"status": 201, "data": dict(entity)}
+        # except ValueError as e:
+        #     return {"error": str(e)}
+
+    def _multi_insert(self, resource, datalist, username):
+        """Insert an entity into a resource (datastore-Kind)
+
+        Args:
+            resource (str): the name of the resource
+            datalist (list): list of the resources
+            username (str): label for the user doing the updating
+        
+        Returns:
+            dict: status (int), plus 'error' (str) or 'data' (list)
+        """
+        if len(datalist) > 25:
+            raise ValueError("Max allowed entities per batch is 25")
+        
+        entities = []
+
+        for data in datalist:
+            now = datetime.utcnow().isoformat()
+
+            data["client_id"] = int(env.get("ALMANAK_CLIENT_ID"))
+            data["created"] = now
+            data["created_by"] = username
+            data["updated"] = now
+            data["updated_by"] = username
+
+            # Use uuid4 for persistent resources, else use timestamp
+            if resource in PERSISTENT_RESOURCES:
+                uuid = str(uuid4())
+            elif resource in TEMPORAL_RESOURCES:
+                uuid = str(uuid1())
+            else:
+                raise ValueError("No such resource: " + resource)
+
+            # set the uuid as the key and its own property
+            data["uuid"] = uuid
+            key = self.db.key(resource, uuid)
+            # Initialize and populate
+            entity = datastore.Entity(key=key)
+            entity.update(data)
+            entities.append(entity)
+
         try:
-            self.db.put(entity)
-            return {"status": 201, "data": dict(entity)}
+            self.db.put_multi(entities)
+            return {"status": 201, "data": [dict(e) for e in entities]}
         except ValueError as e:
-            return {"error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     def _get(self, resource, uuid):
         """Get en entity from a resource
@@ -66,7 +115,7 @@ class DatastoreConnector:
             else:
                 return {"status": 404, "error": "No such entity"}
         except ValueError as e:
-            return {"error": str(e)}
+            return {"status": 400, "error": str(e)}
 
     def _list(
         self, resource, filters=[], projection=[], sort=[], limit=None, ids_only=False
