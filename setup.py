@@ -11,7 +11,7 @@ setup(
     packages=find_packages(),
     description='Module for almanak-services.',
     long_description=long_description,
-    url='https://github.com/clausjuhl/almanak',
+    url='https://github.com/almanak/almanak',
     include_package_data=True,
     license='MIT',
     python_requires='>=3.6.2',
