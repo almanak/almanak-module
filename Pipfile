@@ -7,11 +7,10 @@ name = "pypi"
 "boto3" = "*"
 python-dotenv = "*"
 google-cloud-datastore = "*"
-black = "*"
 
 [dev-packages]
 pylint = "*"
 black = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
