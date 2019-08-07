@@ -8,9 +8,5 @@ name = "pypi"
 python-dotenv = "*"
 google-cloud-datastore = "*"
 
-[dev-packages]
-pylint = "*"
-black = "*"
-
 [requires]
 python_version = "3.7"
