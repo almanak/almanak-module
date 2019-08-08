@@ -1,1 +1,1 @@
-Module for almanak.
+Python module for almanak services.
